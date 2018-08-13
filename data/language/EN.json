@@ -1,0 +1,54 @@
+{   
+    "_comment" : "Mailer",
+    
+    "reset_subject" : "Reset password",
+    "reset_part1" : "You forgot your password? Don't worry. Just click the link below to reset your password:",
+    "reset_part2" : "Please confirm your password to continue",
+    "reset_part3" : "Your temporary password is: ",
+    "Password_Reset_Confirm" : "Confirm password",
+    "Password_Reset_Update" : "Save",
+    "Password_Reset_Title" : "Reset password",
+    "Password_Reset_Sec1_Title" : "Enter a new password for your Admin Panel",
+    "Password_Reset_NewPassword" : "New password",
+
+    
+    "_comment": "Common stuff",
+
+    "Success": "Success",
+    "Error": "Error",
+    "Warning": "Warning",
+    "All fields must be provided": "All fields must be provided.",
+    "Invalid data type": "Invalid data type",
+    "Bad request" : "Bad request",
+    "This action is not allowed" : "This action is not allowed",
+
+    
+    "_comment" : "User Management Service",    
+    
+    "Email must be provided": "Email must be provided",
+    "All fields must be provided": "All fields must be provided",
+    "User does not exist": "User does not exist",
+    "Email has been sent": "Email has been sent",
+    "Password reset must be requested": "Password reset must be requested",
+    "Password has been changed": "Password has been changed",
+    
+    
+    
+    
+    
+    "_comment" : "Mail service, scripts",
+    
+    "Code missing" : "Code missing",
+    "Account_New_Activated" : "Account activated successfully.",
+    "Activation_Code_NotValid" : "Activation code not valid",
+    "Activation_Code_Expired" : "The link has been expired",
+    "Activation_Code_Error" : "Problem with creating user",
+    "Reset_Password_AtLeast1" : "Password must contain at least one character.",
+    "Reset_Password_OneNumber" : "Password must contain at least one number.",
+    "Reset_Password_Uppercase" : "Password must contain at least one uppercase letter.",
+    "Reset_Password_Lowercase" : "Password must contain at least one lowercase letter.",
+    "Reset_Password_Error" : "Error at password change.",
+    "Reset_Password_Success" : "Password updated successfully.",
+    "Reset_Password_NoMatch" : "Passwords do not match!"
+    
+}

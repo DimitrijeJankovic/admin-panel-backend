@@ -1,0 +1,10 @@
+.vagrant/
+vendor/
+data/cache/*
+!data/cache/.gitkeep
+phpunit.xml
+nbproject/
+data/log/*
+phinx.yml.save
+.vscode/
+angular/
