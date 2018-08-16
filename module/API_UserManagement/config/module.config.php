@@ -26,12 +26,34 @@ return [
                     ],
                 ],
             ],
+            'api_user-management.rpc.valid-token' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/valid-token',
+                    'defaults' => [
+                        'controller' => 'API_UserManagement\\V1\\Rpc\\ValidToken\\Controller',
+                        'action' => 'validToken',
+                    ],
+                ],
+            ],
+            'api_user-management.rpc.welcome-code' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/welcome-code',
+                    'defaults' => [
+                        'controller' => 'API_UserManagement\\V1\\Rpc\\WelcomeCode\\Controller',
+                        'action' => 'welcomeCode',
+                    ],
+                ],
+            ],
         ],
     ],
     'zf-versioning' => [
         'uri' => [
             0 => 'api_user-management.rest.user',
             1 => 'api_user-management.rest.forgot-password',
+            2 => 'api_user-management.rpc.valid-token',
+            3 => 'api_user-management.rpc.welcome-code',
         ],
     ],
     'zf-rest' => [
@@ -75,6 +97,8 @@ return [
         'controllers' => [
             'API_UserManagement\\V1\\Rest\\User\\Controller' => 'Json',
             'API_UserManagement\\V1\\Rest\\ForgotPassword\\Controller' => 'Json',
+            'API_UserManagement\\V1\\Rpc\\ValidToken\\Controller' => 'Json',
+            'API_UserManagement\\V1\\Rpc\\WelcomeCode\\Controller' => 'Json',
         ],
         'accept_whitelist' => [
             'API_UserManagement\\V1\\Rest\\User\\Controller' => [
@@ -87,6 +111,16 @@ return [
                 1 => 'application/hal+json',
                 2 => 'application/json',
             ],
+            'API_UserManagement\\V1\\Rpc\\ValidToken\\Controller' => [
+                0 => 'application/vnd.api_user-management.v1+json',
+                1 => 'application/json',
+                2 => 'application/*+json',
+            ],
+            'API_UserManagement\\V1\\Rpc\\WelcomeCode\\Controller' => [
+                0 => 'application/vnd.api_user-management.v1+json',
+                1 => 'application/json',
+                2 => 'application/*+json',
+            ],
         ],
         'content_type_whitelist' => [
             'API_UserManagement\\V1\\Rest\\User\\Controller' => [
@@ -94,6 +128,14 @@ return [
                 1 => 'application/json',
             ],
             'API_UserManagement\\V1\\Rest\\ForgotPassword\\Controller' => [
+                0 => 'application/vnd.api_user-management.v1+json',
+                1 => 'application/json',
+            ],
+            'API_UserManagement\\V1\\Rpc\\ValidToken\\Controller' => [
+                0 => 'application/vnd.api_user-management.v1+json',
+                1 => 'application/json',
+            ],
+            'API_UserManagement\\V1\\Rpc\\WelcomeCode\\Controller' => [
                 0 => 'application/vnd.api_user-management.v1+json',
                 1 => 'application/json',
             ],
@@ -148,7 +190,25 @@ return [
         ],
     ],
     'controllers' => [
-        'factories' => [],
+        'factories' => [
+            'API_UserManagement\\V1\\Rpc\\ValidToken\\Controller' => \API_UserManagement\V1\Rpc\ValidToken\ValidTokenControllerFactory::class,
+            'API_UserManagement\\V1\\Rpc\\WelcomeCode\\Controller' => \API_UserManagement\V1\Rpc\WelcomeCode\WelcomeCodeControllerFactory::class,
+        ],
     ],
-    'zf-rpc' => [],
+    'zf-rpc' => [
+        'API_UserManagement\\V1\\Rpc\\ValidToken\\Controller' => [
+            'service_name' => 'ValidToken',
+            'http_methods' => [
+                0 => 'POST',
+            ],
+            'route_name' => 'api_user-management.rpc.valid-token',
+        ],
+        'API_UserManagement\\V1\\Rpc\\WelcomeCode\\Controller' => [
+            'service_name' => 'WelcomeCode',
+            'http_methods' => [
+                0 => 'GET',
+            ],
+            'route_name' => 'api_user-management.rpc.welcome-code',
+        ],
+    ],
 ];

@@ -10,6 +10,11 @@
     "Password_Reset_Title" : "Reset password",
     "Password_Reset_Sec1_Title" : "Enter a new password for your Admin Panel",
     "Password_Reset_NewPassword" : "New password",
+    
+    "welcome_part1" : "Welcome to Admin Panel!",
+    "welcome_part2" : "Please confirm your registration to continue.",
+    "Confirm" : "Confirm",
+    "welcome_subject": "Welcome",
 
     
     "_comment": "Common stuff",
@@ -31,6 +36,13 @@
     "Email has been sent": "Email has been sent",
     "Password reset must be requested": "Password reset must be requested",
     "Password has been changed": "Password has been changed",
+    "Token must be provided": "Token must be provided",
+    "Token not found": "Token not found",
+    "Token expired": "Token expired",
+    "Token oke": "Token oke",
+    "User already exists": "User already exists",
+    "Activation code needed": "Activation code needed",
+    "User created": "User created",
     
     
     

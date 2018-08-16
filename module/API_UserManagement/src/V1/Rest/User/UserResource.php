@@ -7,17 +7,28 @@ use ZF\Rest\AbstractResourceListener;
 use Zend\Db\Sql\Sql;
 use Zend\Crypt\Password\Bcrypt;
 use Zend\Db\Adapter\Adapter;
+use Application\Service\LanguageService;
+use Application\Service\MailerService;
 
 class UserResource extends AbstractResourceListener {
 
     private $adapter;
     private $messages;
-    private $language;
-
+    
     public function __construct(Adapter $adapter) {
+        
         $this->adapter = $adapter;
+        
+        # Get language       
+        $language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? strtoupper($_SERVER['HTTP_ACCEPT_LANGUAGE']) : "EN";
+        $lang_messages = new LanguageService($language);
+        $this->messages = $lang_messages->messages;
     }
-
+    
+    private function generateNumber($digits){
+        return str_pad(rand(0, pow(10, $digits)-1), $digits, '0', STR_PAD_LEFT);
+    }
+    
     /**
      * Create a resource
      *
@@ -38,42 +49,40 @@ class UserResource extends AbstractResourceListener {
    
         # Check if user does exists in user table
         $findEmail = $sql->select()->from('oauth_clients')->where(['client_id' => $data->email]);
-        
         try { $user = $adapter->query($sql->getSqlStringForSqlObject($findEmail), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
         catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
         
-        if (!empty($user)) { return new ApiProblem(409, 'User already exists', null, $this->messages['Error'], []); }
+        if (!empty($user)) { return new ApiProblem(409, $this->messages['User already exists'], null, $this->messages['Error'], []); }
+        
+        # Check if user does exists in temp_user table
+        $findEmail = $sql->select()->from('temp_user')->where(['client_id' => $data->email]);
+        try { $user = $adapter->query($sql->getSqlStringForSqlObject($findEmail), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        if (!empty($user)) { return new ApiProblem(409, $this->messages['User already exists'], null, $this->messages['Error'], []); }
         
         $bcrypt = new Bcrypt();
         $password = $bcrypt->create($data->password);
         
+        $activation_code = $this->generateNumber(6);
+        
         # Insert user data in table
-        $createUser = $sql->insert('oauth_clients')->values([
+        $createUser = $sql->insert('temp_user')->values([
             'first_name' => $data->first_name,
             'last_name' => isset($data->last_name) ? $data->last_name : "",
-            "username" => !empty($data->username) ? $data->username : "",
             'client_secret' => $password,
             'client_id' => $data->email,
-            'user_id' => 1,
-            'role' => 2,
-            "redirect_uri" => "",
-            "status" => 0
+            'registration_code' => $activation_code
         ]);
         
         try { $userData = $adapter->query($sql->getSqlStringForSqlObject($createUser), $adapter::QUERY_MODE_EXECUTE); }
         catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
         
-        # Update user_id column in newly created user data - this is done because we will be able to get userId directly through apigiliy
-        $updateUserId = $sql->update('oauth_clients')
-                ->set(['user_id' => $userData->getGeneratedValue()])
-                ->where(['id' => $userData->getGeneratedValue()]); 
+        # send confer mail
+        $mailer = new MailerService();
+        $mailer->welcomeMail($data->email, $activation_code, $this->messages);
         
-        try { $update = $adapter->query($sql->getSqlStringForSqlObject($updateUserId), $adapter::QUERY_MODE_EXECUTE); }
-        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
-        
-        if($update){
-            return new ApiProblem(200, 'User created', null, $this->messages['Success'], []);
-        }
+        return [];
     }
 
     /**
@@ -154,7 +163,6 @@ class UserResource extends AbstractResourceListener {
      * @return ApiProblem|mixed
      */
     public function replaceList($data) {
-        return new ApiProblem(405, 'The PUT method has not been defined for collections');
     }
 
     /**

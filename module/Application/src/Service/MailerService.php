@@ -33,10 +33,10 @@ class MailerService
     }
     
     public function resetPasswordMail($user_email, $token, $messages) {
-        $msgbodyInsert = \Application\Model\Config::ROOT_URL."/mail_service/password_reset.php?token=".$token;
+        $msgbodyInsert = "http://localhost:4200/user/reset-password?token=".$token;
         
         $content = $messages['reset_part1'] .
-                "<br><br><a href='".$msgbodyInsert."'>".$msgbodyInsert."</a>";   
+                "<br><br><a href='".$msgbodyInsert."'>Reset Password</a>";   
         
         // make a header as html
         $html = new MimePart($content);
@@ -52,6 +52,36 @@ class MailerService
         $mail->setFrom($this->email_from, $this->name_from);
         $mail->setTo($user_email);
         $mail->setSubject($messages['reset_subject']);
+        $transport = new SmtpTransport($this->options);
+        $transport->send($mail); 
+        
+        return true;
+    }
+    
+    public function welcomeMail($user_email, $activation_code, $messages) {
+        
+        $msgbodyInsert = "http://localhost:4200/user/welcome?code=".$activation_code;
+        
+        $content = $messages['welcome_part1'] .
+                   "<br>".
+                   $messages['welcome_part2'].
+                   "<br><br>
+                    <a href='".$msgbodyInsert."'>".$messages['Confirm']."</a>";   
+        
+        // make a header as html
+        $html = new MimePart($content);
+        $html->type = "text/html";
+        $html->charset = 'UTF-8';
+        $body = new MimeMessage();
+        $body->setParts(array($html,));
+
+        // instance mail 
+        $mail = new Mail\Message();
+        $mail->setEncoding("UTF-8");
+        $mail->setBody($body);
+        $mail->setFrom($this->email_from, $this->name_from);
+        $mail->setTo($user_email);
+        $mail->setSubject($messages['welcome_subject']);
         $transport = new SmtpTransport($this->options);
         $transport->send($mail); 
         
