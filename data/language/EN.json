@@ -45,6 +45,17 @@
     "User created": "User created",
     
     
+    "_comment" : "Inventory",
+    "Producers not found": "Producers not found",
+    "Produce created": "Produce created",
+    "Produce not found": "Produce not found",
+    "Countries not found": "Countries not found",
+    "Producer id must be provided": "Producer id must be provided",
+    "Produce do not exists": "Produce do not exists",
+    "Producer updated": "Producer updated",
+    "Produces deleted": "Produces deleted",
+    
+    
     
     
     

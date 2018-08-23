@@ -21,6 +21,7 @@ return [
         'authentication' => [
             'map' => [
                 'API_UserManagement\\V1' => 'oauth',
+                'API_Inventory\\V1' => 'oauth',
             ],
         ],
     ],

@@ -5,7 +5,7 @@
  * The previous config file has been stored in ./config/modules.config.old
  */
 return [
-    'Zend\Mail',
+    'Zend\\Mail',
     'Zend\\Db',
     'Zend\\Filter',
     'Zend\\Hydrator',
@@ -27,4 +27,5 @@ return [
     'ZF\\Versioning',
     'Application',
     'API_UserManagement',
+    'API_Inventory',
 ];
