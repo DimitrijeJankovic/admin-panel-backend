@@ -15,8 +15,8 @@ class CreateMaterials extends AbstractMigration
                 ->addColumn('original_height', 'float')
                 ->addColumn('original_depth', 'float')
                 ->addColumn('code', 'string', ['limit' => 255])
-                ->addColumn('description_m', 'text')
-                ->addColumn('image_url', 'text')
+                ->addColumn('description_m', 'text', ['null' => true])
+                ->addColumn('image_url', 'text', ['null' => true])
                 ->create();
         
         $materials->changeColumn('id', 'integer', ['limit' => MysqlAdapter::INT_BIG, 'signed' => false, 'identity' => true])->save();

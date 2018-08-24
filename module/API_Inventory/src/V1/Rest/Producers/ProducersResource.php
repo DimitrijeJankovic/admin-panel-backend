@@ -96,7 +96,7 @@ class ProducersResource extends AbstractResourceListener
         try{ $producer = $adapter->query($sql->getSqlStringForSqlObject($delete), $adapter::QUERY_MODE_EXECUTE); }
         catch(\Zend\Db\Adapter\Adapter $e){ return new ApiProblem(409, $e->getPrevious()->getMessage()); }
         
-        if (empty($producer)) { return true; }
+        return true;
         
     }
 
@@ -157,8 +157,6 @@ class ProducersResource extends AbstractResourceListener
         try { $producers = $adapter->query($sql->getSqlStringForSqlObject($getProducers), $adapter::QUERY_MODE_EXECUTE)->toArray();}
         catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage()); }
 
-        if (empty($producers)) { return new ApiProblem(404, $this->messages['Produces not found'], null, $this->messages['Error'], []); }
-        
         return $producers;
     }
 

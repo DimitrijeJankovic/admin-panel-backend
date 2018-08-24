@@ -52,8 +52,12 @@
     "Countries not found": "Countries not found",
     "Producer id must be provided": "Producer id must be provided",
     "Produce do not exists": "Produce do not exists",
+    "Producer created": "Producer created",
     "Producer updated": "Producer updated",
     "Produces deleted": "Produces deleted",
+    "Material type not found": "Material type not found",
+    "Material created": "Material created",
+    "Material not found": "Material not found",
     
     
     
