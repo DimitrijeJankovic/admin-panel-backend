@@ -77,6 +77,12 @@ class MaterialsResource extends AbstractResourceListener
         
         if (empty($material)) { return new ApiProblem(409, $this->messages['Material not found'], null, $this->messages['Error'], []); }
         
+        if(!empty($material[0]['image_url'])){
+            $img = \Application\Model\Config::MATERIAL_IMG_ANGULAR.$material[0]['image_url'];
+            
+            if (file_exists($img)) { unlink($img); }
+        }
+        
         # del produces
         $delete = $sql->delete('materials')->where(['id' => $id]);
         
@@ -105,7 +111,22 @@ class MaterialsResource extends AbstractResourceListener
      */
     public function fetch($id)
     {
-        return new ApiProblem(405, 'The GET method has not been defined for individual resources');
+        $adapter = $this->adapter; 
+        $sql = new Sql($adapter);
+        
+        # Get material
+        $getMaterial = $sql->select()
+                ->from('materials')
+                ->columns(['id AS material_id', 'name AS material_name', 'original_width', 'original_height', 'original_depth', 'code', 'description_m'])
+                ->where(['materials.id' => $id])
+                ->join('material_type', 'material_type.id = materials.type_id', ['name'], Select::JOIN_INNER);
+        
+        try { $material = $adapter->query($sql->getSqlStringForSqlObject($getMaterial), $adapter::QUERY_MODE_EXECUTE)->toArray();}
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage()); }
+
+        if (empty($material)) { return new ApiProblem(404, $this->messages['Material not found'], null, $this->messages['Error'], []); }
+        
+        return $material;
     }
 
     /**
@@ -174,6 +195,43 @@ class MaterialsResource extends AbstractResourceListener
      */
     public function update($id, $data)
     {
-        return new ApiProblem(405, 'The PUT method has not been defined for individual resources');
+        if(!isset($id) || empty($id)){
+            return new ApiProblem(412, $this->messages['Matirial id must be provided'], null, $this->messages['Warning'], []);           
+        }
+        
+        if((!isset($data->name) || empty($data->name)) ||
+           (!isset($data->material) || empty($data->material)) ||
+           (!isset($data->width) || empty($data->width)) ||
+           (!isset($data->height) || empty($data->height)) ||
+           (!isset($data->code) || empty($data->code)) ||
+           (!isset($data->depth) || empty($data->depth))) {            
+            return new ApiProblem(412, $this->messages['All fields must be provided'], null, $this->messages['Warning'], []);           
+        }
+        
+        $adapter = $this->adapter;
+        $sql = new Sql($adapter);
+   
+        # Check if exists
+        $find = $sql->select()->from('materials')->where(['id' => $id]);
+        try { $material = $adapter->query($sql->getSqlStringForSqlObject($find), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        if (empty($material)) { return new ApiProblem(409, $this->messages['Material do not exists'], null, $this->messages['Error'], []); }
+        
+        $updateMaterial = $sql->update('materials')
+                ->set(['name' => $data->name,
+                       'type_id' => $data->material,
+                       'original_width' => $data->width,
+                       'original_height' => $data->height,
+                       'original_depth' => $data->depth,
+                       'code' => $data->code,
+                       'description_m' => isset($data->desc)? $data->desc : ""
+                    ])
+                ->where(['id' => $id]);
+        
+        try { $materialData = $adapter->query($sql->getSqlStringForSqlObject($updateMaterial), $adapter::QUERY_MODE_EXECUTE); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        return new ApiProblem(200, $this->messages['Material updated'], null, $this->messages['Success'], []);
     }
 }

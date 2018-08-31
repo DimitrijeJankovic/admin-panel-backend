@@ -8,3 +8,4 @@ data/log/*
 phinx.yml.save
 .vscode/
 angular/
+public/img/material

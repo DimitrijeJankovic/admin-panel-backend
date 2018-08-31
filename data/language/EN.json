@@ -58,7 +58,18 @@
     "Material type not found": "Material type not found",
     "Material created": "Material created",
     "Material not found": "Material not found",
-    
+    "Matirial id must be provided": "Matirial id must be provided",
+    "Material do not exists": "Material do not exists",
+    "Material updated": "Material updated",
+    "Image uploaded": "Image uploaded",
+    "Image must be smaller then 1Mb": "Image must be smaller then 1Mb",
+    "Invalid file type": "Invalid file type",
+    "Error uploading file": "Error uploading file",
+    "Error uploading file": "Error uploading file",
+    "Could not upload profile image": "Could not upload profile image",
+    "Material photo deleted": "Material photo deleted",
+    "Photo does not exist": "Photo does not exist",
+    "Orders not found": "Orders not found",
     
     
     

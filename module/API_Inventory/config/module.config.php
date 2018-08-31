@@ -6,6 +6,8 @@ return [
             \API_Inventory\V1\Rest\Countries\CountriesResource::class => \API_Inventory\V1\Rest\Countries\CountriesResourceFactory::class,
             \API_Inventory\V1\Rest\Materials\MaterialsResource::class => \API_Inventory\V1\Rest\Materials\MaterialsResourceFactory::class,
             \API_Inventory\V1\Rest\MaterialTypes\MaterialTypesResource::class => \API_Inventory\V1\Rest\MaterialTypes\MaterialTypesResourceFactory::class,
+            \API_Inventory\V1\Rest\MaterialsPhoto\MaterialsPhotoResource::class => \API_Inventory\V1\Rest\MaterialsPhoto\MaterialsPhotoResourceFactory::class,
+            \API_Inventory\V1\Rest\Orders\OrdersResource::class => \API_Inventory\V1\Rest\Orders\OrdersResourceFactory::class,
         ],
     ],
     'router' => [
@@ -46,6 +48,24 @@ return [
                     ],
                 ],
             ],
+            'api_inventory.rest.materials-photo' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/materials-photo[/:materials_photo_id]',
+                    'defaults' => [
+                        'controller' => 'API_Inventory\\V1\\Rest\\MaterialsPhoto\\Controller',
+                    ],
+                ],
+            ],
+            'api_inventory.rest.orders' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/orders[/:orders_id]',
+                    'defaults' => [
+                        'controller' => 'API_Inventory\\V1\\Rest\\Orders\\Controller',
+                    ],
+                ],
+            ],
         ],
     ],
     'zf-versioning' => [
@@ -54,6 +74,8 @@ return [
             0 => 'api_inventory.rest.countries',
             2 => 'api_inventory.rest.materials',
             3 => 'api_inventory.rest.material-types',
+            4 => 'api_inventory.rest.materials-photo',
+            5 => 'api_inventory.rest.orders',
         ],
     ],
     'zf-rest' => [
@@ -133,6 +155,47 @@ return [
             'collection_class' => \API_Inventory\V1\Rest\MaterialTypes\MaterialTypesCollection::class,
             'service_name' => 'MaterialTypes',
         ],
+        'API_Inventory\\V1\\Rest\\MaterialsPhoto\\Controller' => [
+            'listener' => \API_Inventory\V1\Rest\MaterialsPhoto\MaterialsPhotoResource::class,
+            'route_name' => 'api_inventory.rest.materials-photo',
+            'route_identifier_name' => 'materials_photo_id',
+            'collection_name' => 'materials_photo',
+            'entity_http_methods' => [
+                0 => 'POST',
+                1 => 'DELETE',
+            ],
+            'collection_http_methods' => [
+                0 => 'POST',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \API_Inventory\V1\Rest\MaterialsPhoto\MaterialsPhotoEntity::class,
+            'collection_class' => \API_Inventory\V1\Rest\MaterialsPhoto\MaterialsPhotoCollection::class,
+            'service_name' => 'MaterialsPhoto',
+        ],
+        'API_Inventory\\V1\\Rest\\Orders\\Controller' => [
+            'listener' => \API_Inventory\V1\Rest\Orders\OrdersResource::class,
+            'route_name' => 'api_inventory.rest.orders',
+            'route_identifier_name' => 'orders_id',
+            'collection_name' => 'orders',
+            'entity_http_methods' => [
+                0 => 'GET',
+                1 => 'DELETE',
+                2 => 'PUT',
+            ],
+            'collection_http_methods' => [
+                0 => 'GET',
+                1 => 'POST',
+                2 => 'PUT',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \API_Inventory\V1\Rest\Orders\OrdersEntity::class,
+            'collection_class' => \API_Inventory\V1\Rest\Orders\OrdersCollection::class,
+            'service_name' => 'Orders',
+        ],
     ],
     'zf-content-negotiation' => [
         'controllers' => [
@@ -140,6 +203,8 @@ return [
             'API_Inventory\\V1\\Rest\\Countries\\Controller' => 'Json',
             'API_Inventory\\V1\\Rest\\Materials\\Controller' => 'Json',
             'API_Inventory\\V1\\Rest\\MaterialTypes\\Controller' => 'Json',
+            'API_Inventory\\V1\\Rest\\MaterialsPhoto\\Controller' => 'Json',
+            'API_Inventory\\V1\\Rest\\Orders\\Controller' => 'Json',
         ],
         'accept_whitelist' => [
             'API_Inventory\\V1\\Rest\\Producers\\Controller' => [
@@ -162,6 +227,16 @@ return [
                 1 => 'application/hal+json',
                 2 => 'application/json',
             ],
+            'API_Inventory\\V1\\Rest\\MaterialsPhoto\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\Orders\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
         ],
         'content_type_whitelist' => [
             'API_Inventory\\V1\\Rest\\Producers\\Controller' => [
@@ -177,6 +252,14 @@ return [
                 1 => 'application/json',
             ],
             'API_Inventory\\V1\\Rest\\MaterialTypes\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\MaterialsPhoto\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\Orders\\Controller' => [
                 0 => 'application/vnd.api_inventory.v1+json',
                 1 => 'application/json',
             ],
@@ -230,6 +313,30 @@ return [
                 'entity_identifier_name' => 'id',
                 'route_name' => 'api_inventory.rest.material-types',
                 'route_identifier_name' => 'material_types_id',
+                'is_collection' => true,
+            ],
+            \API_Inventory\V1\Rest\MaterialsPhoto\MaterialsPhotoEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.materials-photo',
+                'route_identifier_name' => 'materials_photo_id',
+                'hydrator' => \Zend\Hydrator\ArraySerializable::class,
+            ],
+            \API_Inventory\V1\Rest\MaterialsPhoto\MaterialsPhotoCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.materials-photo',
+                'route_identifier_name' => 'materials_photo_id',
+                'is_collection' => true,
+            ],
+            \API_Inventory\V1\Rest\Orders\OrdersEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.orders',
+                'route_identifier_name' => 'orders_id',
+                'hydrator' => \Zend\Hydrator\ArraySerializable::class,
+            ],
+            \API_Inventory\V1\Rest\Orders\OrdersCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.orders',
+                'route_identifier_name' => 'orders_id',
                 'is_collection' => true,
             ],
         ],
@@ -298,6 +405,38 @@ return [
                     'PUT' => false,
                     'PATCH' => false,
                     'DELETE' => false,
+                ],
+            ],
+            'API_Inventory\\V1\\Rest\\MaterialsPhoto\\Controller' => [
+                'collection' => [
+                    'GET' => false,
+                    'POST' => true,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+                'entity' => [
+                    'GET' => false,
+                    'POST' => true,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => true,
+                ],
+            ],
+            'API_Inventory\\V1\\Rest\\Orders\\Controller' => [
+                'collection' => [
+                    'GET' => true,
+                    'POST' => true,
+                    'PUT' => true,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+                'entity' => [
+                    'GET' => true,
+                    'POST' => false,
+                    'PUT' => true,
+                    'PATCH' => false,
+                    'DELETE' => true,
                 ],
             ],
         ],
