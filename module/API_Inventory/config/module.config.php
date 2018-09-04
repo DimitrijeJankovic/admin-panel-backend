@@ -8,6 +8,8 @@ return [
             \API_Inventory\V1\Rest\MaterialTypes\MaterialTypesResource::class => \API_Inventory\V1\Rest\MaterialTypes\MaterialTypesResourceFactory::class,
             \API_Inventory\V1\Rest\MaterialsPhoto\MaterialsPhotoResource::class => \API_Inventory\V1\Rest\MaterialsPhoto\MaterialsPhotoResourceFactory::class,
             \API_Inventory\V1\Rest\Orders\OrdersResource::class => \API_Inventory\V1\Rest\Orders\OrdersResourceFactory::class,
+            \API_Inventory\V1\Rest\OrderItems\OrderItemsResource::class => \API_Inventory\V1\Rest\OrderItems\OrderItemsResourceFactory::class,
+            \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsResource::class => \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsResourceFactory::class,
         ],
     ],
     'router' => [
@@ -66,6 +68,24 @@ return [
                     ],
                 ],
             ],
+            'api_inventory.rest.order-items' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/order-items[/:order_items_id]',
+                    'defaults' => [
+                        'controller' => 'API_Inventory\\V1\\Rest\\OrderItems\\Controller',
+                    ],
+                ],
+            ],
+            'api_inventory.rest.order-item-elements' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/order-item-elements[/:order_item_elements_id]',
+                    'defaults' => [
+                        'controller' => 'API_Inventory\\V1\\Rest\\OrderItemElements\\Controller',
+                    ],
+                ],
+            ],
         ],
     ],
     'zf-versioning' => [
@@ -76,6 +96,8 @@ return [
             3 => 'api_inventory.rest.material-types',
             4 => 'api_inventory.rest.materials-photo',
             5 => 'api_inventory.rest.orders',
+            6 => 'api_inventory.rest.order-items',
+            7 => 'api_inventory.rest.order-item-elements',
         ],
     ],
     'zf-rest' => [
@@ -181,8 +203,8 @@ return [
             'collection_name' => 'orders',
             'entity_http_methods' => [
                 0 => 'GET',
-                1 => 'DELETE',
-                2 => 'PUT',
+                1 => 'PUT',
+                2 => 'DELETE',
             ],
             'collection_http_methods' => [
                 0 => 'GET',
@@ -196,6 +218,38 @@ return [
             'collection_class' => \API_Inventory\V1\Rest\Orders\OrdersCollection::class,
             'service_name' => 'Orders',
         ],
+        'API_Inventory\\V1\\Rest\\OrderItems\\Controller' => [
+            'listener' => \API_Inventory\V1\Rest\OrderItems\OrderItemsResource::class,
+            'route_name' => 'api_inventory.rest.order-items',
+            'route_identifier_name' => 'order_items_id',
+            'collection_name' => 'order_items',
+            'entity_http_methods' => [],
+            'collection_http_methods' => [
+                0 => 'GET',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \API_Inventory\V1\Rest\OrderItems\OrderItemsEntity::class,
+            'collection_class' => \API_Inventory\V1\Rest\OrderItems\OrderItemsCollection::class,
+            'service_name' => 'OrderItems',
+        ],
+        'API_Inventory\\V1\\Rest\\OrderItemElements\\Controller' => [
+            'listener' => \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsResource::class,
+            'route_name' => 'api_inventory.rest.order-item-elements',
+            'route_identifier_name' => 'order_item_elements_id',
+            'collection_name' => 'order_item_elements',
+            'entity_http_methods' => [],
+            'collection_http_methods' => [
+                0 => 'GET',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsEntity::class,
+            'collection_class' => \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsCollection::class,
+            'service_name' => 'OrderItemElements',
+        ],
     ],
     'zf-content-negotiation' => [
         'controllers' => [
@@ -205,6 +259,8 @@ return [
             'API_Inventory\\V1\\Rest\\MaterialTypes\\Controller' => 'Json',
             'API_Inventory\\V1\\Rest\\MaterialsPhoto\\Controller' => 'Json',
             'API_Inventory\\V1\\Rest\\Orders\\Controller' => 'Json',
+            'API_Inventory\\V1\\Rest\\OrderItems\\Controller' => 'Json',
+            'API_Inventory\\V1\\Rest\\OrderItemElements\\Controller' => 'Json',
         ],
         'accept_whitelist' => [
             'API_Inventory\\V1\\Rest\\Producers\\Controller' => [
@@ -237,6 +293,16 @@ return [
                 1 => 'application/hal+json',
                 2 => 'application/json',
             ],
+            'API_Inventory\\V1\\Rest\\OrderItems\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\OrderItemElements\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
         ],
         'content_type_whitelist' => [
             'API_Inventory\\V1\\Rest\\Producers\\Controller' => [
@@ -260,6 +326,14 @@ return [
                 1 => 'application/json',
             ],
             'API_Inventory\\V1\\Rest\\Orders\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\OrderItems\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\OrderItemElements\\Controller' => [
                 0 => 'application/vnd.api_inventory.v1+json',
                 1 => 'application/json',
             ],
@@ -337,6 +411,30 @@ return [
                 'entity_identifier_name' => 'id',
                 'route_name' => 'api_inventory.rest.orders',
                 'route_identifier_name' => 'orders_id',
+                'is_collection' => true,
+            ],
+            \API_Inventory\V1\Rest\OrderItems\OrderItemsEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.order-items',
+                'route_identifier_name' => 'order_items_id',
+                'hydrator' => \Zend\Hydrator\ArraySerializable::class,
+            ],
+            \API_Inventory\V1\Rest\OrderItems\OrderItemsCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.order-items',
+                'route_identifier_name' => 'order_items_id',
+                'is_collection' => true,
+            ],
+            \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.order-item-elements',
+                'route_identifier_name' => 'order_item_elements_id',
+                'hydrator' => \Zend\Hydrator\ArraySerializable::class,
+            ],
+            \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.order-item-elements',
+                'route_identifier_name' => 'order_item_elements_id',
                 'is_collection' => true,
             ],
         ],
@@ -437,6 +535,38 @@ return [
                     'PUT' => true,
                     'PATCH' => false,
                     'DELETE' => true,
+                ],
+            ],
+            'API_Inventory\\V1\\Rest\\OrderItems\\Controller' => [
+                'collection' => [
+                    'GET' => true,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+                'entity' => [
+                    'GET' => false,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+            ],
+            'API_Inventory\\V1\\Rest\\OrderItemElements\\Controller' => [
+                'collection' => [
+                    'GET' => true,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+                'entity' => [
+                    'GET' => false,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
                 ],
             ],
         ],
