@@ -20,7 +20,7 @@ environments:
         host: localhost
         name: admin_panel
         user: root
-        pass: 'fubar.909'
+        pass: 'Byte.789'
         port: 3306
         charset: utf8
 

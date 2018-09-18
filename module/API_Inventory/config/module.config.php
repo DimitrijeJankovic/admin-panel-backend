@@ -10,6 +10,8 @@ return [
             \API_Inventory\V1\Rest\Orders\OrdersResource::class => \API_Inventory\V1\Rest\Orders\OrdersResourceFactory::class,
             \API_Inventory\V1\Rest\OrderItems\OrderItemsResource::class => \API_Inventory\V1\Rest\OrderItems\OrderItemsResourceFactory::class,
             \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsResource::class => \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsResourceFactory::class,
+            'API_Inventory\\V1\\Rest\\OrdersLeyaout\\OrdersLeyaoutResource' => 'API_Inventory\\V1\\Rest\\OrdersLeyaout\\OrdersLeyaoutResourceFactory',
+            \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutResource::class => \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutResourceFactory::class,
         ],
     ],
     'router' => [
@@ -86,6 +88,15 @@ return [
                     ],
                 ],
             ],
+            'api_inventory.rest.orders-folder-leyaout' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/orders-folder-leyaout[/:orders_folder_leyaout_id]',
+                    'defaults' => [
+                        'controller' => 'API_Inventory\\V1\\Rest\\OrdersFolderLeyaout\\Controller',
+                    ],
+                ],
+            ],
         ],
     ],
     'zf-versioning' => [
@@ -98,6 +109,7 @@ return [
             5 => 'api_inventory.rest.orders',
             6 => 'api_inventory.rest.order-items',
             7 => 'api_inventory.rest.order-item-elements',
+            9 => 'api_inventory.rest.orders-folder-leyaout',
         ],
     ],
     'zf-rest' => [
@@ -250,6 +262,25 @@ return [
             'collection_class' => \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsCollection::class,
             'service_name' => 'OrderItemElements',
         ],
+        'API_Inventory\\V1\\Rest\\OrdersFolderLeyaout\\Controller' => [
+            'listener' => \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutResource::class,
+            'route_name' => 'api_inventory.rest.orders-folder-leyaout',
+            'route_identifier_name' => 'orders_folder_leyaout_id',
+            'collection_name' => 'orders_folder_leyaout',
+            'entity_http_methods' => [
+                0 => 'PATCH',
+                1 => 'GET',
+            ],
+            'collection_http_methods' => [
+                0 => 'GET',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutEntity::class,
+            'collection_class' => \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutCollection::class,
+            'service_name' => 'OrdersFolderLeyaout',
+        ],
     ],
     'zf-content-negotiation' => [
         'controllers' => [
@@ -261,6 +292,7 @@ return [
             'API_Inventory\\V1\\Rest\\Orders\\Controller' => 'Json',
             'API_Inventory\\V1\\Rest\\OrderItems\\Controller' => 'Json',
             'API_Inventory\\V1\\Rest\\OrderItemElements\\Controller' => 'Json',
+            'API_Inventory\\V1\\Rest\\OrdersFolderLeyaout\\Controller' => 'Json',
         ],
         'accept_whitelist' => [
             'API_Inventory\\V1\\Rest\\Producers\\Controller' => [
@@ -303,6 +335,11 @@ return [
                 1 => 'application/hal+json',
                 2 => 'application/json',
             ],
+            'API_Inventory\\V1\\Rest\\OrdersFolderLeyaout\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
         ],
         'content_type_whitelist' => [
             'API_Inventory\\V1\\Rest\\Producers\\Controller' => [
@@ -334,6 +371,10 @@ return [
                 1 => 'application/json',
             ],
             'API_Inventory\\V1\\Rest\\OrderItemElements\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\OrdersFolderLeyaout\\Controller' => [
                 0 => 'application/vnd.api_inventory.v1+json',
                 1 => 'application/json',
             ],
@@ -435,6 +476,18 @@ return [
                 'entity_identifier_name' => 'id',
                 'route_name' => 'api_inventory.rest.order-item-elements',
                 'route_identifier_name' => 'order_item_elements_id',
+                'is_collection' => true,
+            ],
+            \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.orders-folder-leyaout',
+                'route_identifier_name' => 'orders_folder_leyaout_id',
+                'hydrator' => \Zend\Hydrator\ArraySerializable::class,
+            ],
+            \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.orders-folder-leyaout',
+                'route_identifier_name' => 'orders_folder_leyaout_id',
                 'is_collection' => true,
             ],
         ],
@@ -563,6 +616,22 @@ return [
                 ],
                 'entity' => [
                     'GET' => false,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+            ],
+            'API_Inventory\\V1\\Rest\\OrdersFolderLeyaout\\Controller' => [
+                'collection' => [
+                    'GET' => true,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+                'entity' => [
+                    'GET' => true,
                     'POST' => false,
                     'PUT' => false,
                     'PATCH' => false,

@@ -61,8 +61,13 @@ class WelcomeCodeController extends AbstractActionController
             'client_id' => $user[0]['client_id'],
             'user_id' => 1,
             'role' => 2,
-            "redirect_uri" => "",
-            "status" => 0
+            "status" => 0,
+            "address" => "dasda",
+            "city" => 's',
+            "state" => "23",
+            "country" => 1,
+            "phone" => "2324343",
+            "user_type_id" => 1
         ]);
        $userData = $adapter->query($sql->getSqlStringForSqlObject($createUser), $adapter::QUERY_MODE_EXECUTE); 
         
