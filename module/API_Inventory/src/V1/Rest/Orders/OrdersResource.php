@@ -32,7 +32,100 @@ class OrdersResource extends AbstractResourceListener
      */
     public function create($data)
     {
-        return new ApiProblem(405, 'The POST method has not been defined');
+        
+        if((!isset($data->order_id) || empty($data->order_id)) ||
+           (!isset($data->date_created) || empty($data->date_created)) ||
+           (!isset($data->status_type) || empty($data->status_type)) ||
+           (!isset($data->payment) || empty($data->payment)) ||
+           (!isset($data->adress) || empty($data->adress)) ||
+           (!isset($data->state) || empty($data->state)) ||
+           (!isset($data->countrie) || empty($data->countrie)) ||
+           (!isset($data->delivery_type) || empty($data->delivery_type))
+        ){            
+            return new ApiProblem(412, $this->messages['All fields must be provided'], null, $this->messages['Warning'], []);           
+        }
+        
+        #get user id from token
+        $user_id = (int) $this->getIdentity()->getAuthenticationIdentity()["user_id"];
+        
+        $adapter = $this->adapter;
+        $sql = new Sql($adapter);
+        
+        $find = $sql->select()->from('order')->where(['id' => $data->order_id]);
+        try { $order = $adapter->query($sql->getSqlStringForSqlObject($find), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        // get countrie id
+        $get_countrie_id = $sql->select()->from('countries')->where(['name' => $data->countrie]);
+        try { $countrie_id = $adapter->query($sql->getSqlStringForSqlObject($get_countrie_id), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        // get delivery_type id
+        $get_delivery_type_id = $sql->select()->from('delivery_types')->where(['name' => $data->delivery_type]);
+        try { $delivery_type_id = $adapter->query($sql->getSqlStringForSqlObject($get_delivery_type_id), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        // get status_type id
+        $get_status_type = $sql->select()->from('status_types')->where(['name' => $data->status_type]);
+        try { $status_type_id = $adapter->query($sql->getSqlStringForSqlObject($get_status_type), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        
+        $countrie_id = $countrie_id[0]['id'];
+        $delivery_type_id = $delivery_type_id[0]['id'];
+        $status_type_id = $status_type_id[0]['id'];
+        
+        // if order exists update it, if not insert new
+        if($order){
+            
+            $update_order = $sql->update('order')
+                    ->set([  
+                            'date_in_progress' => isset($data->date_in_progress)? $data->date_in_progress : null,
+                            'date_finished' => isset($data->date_finished)? $data->date_finished : null,
+                            'date_delivery' => isset($data->date_delivery)? $data->date_delivery : null,
+                            'status_id' => $status_type_id,
+                            'payment' => $data->payment,
+                            'price' => isset($data->price)? $data->price : null,
+                            'adress' => $data->adress,
+                            'adress1' => isset($data->adress1)? $data->adress1 : null,
+                            'state' => $data->state,
+                            'country' => $countrie_id,
+                            'delivery_type_id' => $delivery_type_id,
+                            'supplied_by_users_id' => null,
+                        ])
+                    ->where(['id' => $data->order_id]);
+            
+            try { $edit_order = $adapter->query($sql->getSqlStringForSqlObject($update_order), $adapter::QUERY_MODE_EXECUTE); }
+            catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+            
+            return new ApiProblem(200, $this->messages['Order change'], null, $this->messages['Success'], []);
+            
+        }else{
+        
+            # Insert user data in table
+            $create_order = $sql->insert('order')->values([
+                'user_id' => $user_id,
+                'date_created' => $data->date_created,
+                'date_in_progress' => isset($data->date_in_progress)? $data->date_in_progress : null,
+                'date_finished' => isset($data->date_finished)? $data->date_finished : null,
+                'date_delivery' => isset($data->date_delivery)? $data->date_delivery : null,
+                'status_id' => $status_type_id,
+                'payment' => $data->payment,
+                'price' => isset($data->price)? $data->price : null,
+                'adress' => $data->adress,
+                'adress1' => isset($data->adress1)? $data->adress1 : null,
+                'state' => $data->state,
+                'country' => $countrie_id,
+                'delivery_type_id' => $delivery_type_id,
+                'supplied_by_users_id' => null
+            ]);
+       
+        try { $new_order = $adapter->query($sql->getSqlStringForSqlObject($create_order), $adapter::QUERY_MODE_EXECUTE); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+            
+        return new ApiProblem(200, $this->messages['Order created'], null, $this->messages['Success'], []);
+        
+        }
     }
 
     /**
@@ -65,7 +158,22 @@ class OrdersResource extends AbstractResourceListener
      */
     public function fetch($id)
     {
-        return new ApiProblem(405, 'The GET method has not been defined for individual resources');
+         if((!isset($id) || empty($id))){
+            return new ApiProblem(412, $this->messages['Order id must be provided'], null, $this->messages['Warning'], []);       
+         }
+    
+        $adapter = $this->adapter; 
+        $sql = new Sql($adapter);
+        
+        // get order
+        $find = $sql->select()->from('order')->where(['id' => $id]);
+        
+        try { $order = $adapter->query($sql->getSqlStringForSqlObject($find), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        return $order;
+        
+        
     }
 
     /**

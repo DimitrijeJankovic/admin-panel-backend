@@ -32,7 +32,53 @@ class OrderItemsResource extends AbstractResourceListener
      */
     public function create($data)
     {
-        return new ApiProblem(405, 'The POST method has not been defined');
+        
+        if((!isset($data->id) || empty($data->id)) ||
+           (!isset($data->material_id) || empty($data->material_id)) ||
+           (!isset($data->order_id) || empty($data->order_id)) ||
+           (!isset($data->quantity) || empty($data->quantity))
+        ){            
+            return new ApiProblem(412, $this->messages['All fields must be provided'], null, $this->messages['Warning'], []);           
+        }
+        
+        $adapter = $this->adapter;
+        $sql = new Sql($adapter);
+        
+        $find = $sql->select()->from('order_items')->where(['id' => $data->id, 'order_id' => $data->order_id]);
+        try { $orderItem = $adapter->query($sql->getSqlStringForSqlObject($find), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        // if order item exists update it, if not insert new
+        if($orderItem){
+            
+            $updateOrderItem = $sql->update('order_items')
+                    ->set([  
+                            'material_id' => $data->material_id,
+                            'quantity' => $data->quantity
+                        ])
+                    ->where(['id' => $data->id, 'order_id' => $data->order_id]);
+            
+            try { $editOrderItem = $adapter->query($sql->getSqlStringForSqlObject($updateOrderItem), $adapter::QUERY_MODE_EXECUTE); }
+            catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+            
+            return new ApiProblem(200, $this->messages['Order Item change'], null, $this->messages['Success'], []);
+            
+        }else{
+            
+            # Insert data in table
+            $createOrderItem = $sql->insert('order_items')->values([
+                'order_id' => $data->order_id,
+                'material_id' => $data->material_id,
+                'quantity' => $data->quantity
+            ]);
+
+            try { $newOrderItem = $adapter->query($sql->getSqlStringForSqlObject($createOrderItem), $adapter::QUERY_MODE_EXECUTE); }
+            catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+
+            return new ApiProblem(200, $this->messages['Order Item created'], null, $this->messages['Success'], []);
+            
+        }
+        
     }
 
     /**

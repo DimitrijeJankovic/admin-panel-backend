@@ -12,6 +12,8 @@ return [
             \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsResource::class => \API_Inventory\V1\Rest\OrderItemElements\OrderItemElementsResourceFactory::class,
             'API_Inventory\\V1\\Rest\\OrdersLeyaout\\OrdersLeyaoutResource' => 'API_Inventory\\V1\\Rest\\OrdersLeyaout\\OrdersLeyaoutResourceFactory',
             \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutResource::class => \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutResourceFactory::class,
+            \API_Inventory\V1\Rest\OrderStatus\OrderStatusResource::class => \API_Inventory\V1\Rest\OrderStatus\OrderStatusResourceFactory::class,
+            \API_Inventory\V1\Rest\DeliveryType\DeliveryTypeResource::class => \API_Inventory\V1\Rest\DeliveryType\DeliveryTypeResourceFactory::class,
         ],
     ],
     'router' => [
@@ -97,6 +99,24 @@ return [
                     ],
                 ],
             ],
+            'api_inventory.rest.order-status' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/order-status[/:order_status_id]',
+                    'defaults' => [
+                        'controller' => 'API_Inventory\\V1\\Rest\\OrderStatus\\Controller',
+                    ],
+                ],
+            ],
+            'api_inventory.rest.delivery-type' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/delivery-type[/:delivery_type_id]',
+                    'defaults' => [
+                        'controller' => 'API_Inventory\\V1\\Rest\\DeliveryType\\Controller',
+                    ],
+                ],
+            ],
         ],
     ],
     'zf-versioning' => [
@@ -110,6 +130,8 @@ return [
             6 => 'api_inventory.rest.order-items',
             7 => 'api_inventory.rest.order-item-elements',
             9 => 'api_inventory.rest.orders-folder-leyaout',
+            10 => 'api_inventory.rest.order-status',
+            11 => 'api_inventory.rest.delivery-type',
         ],
     ],
     'zf-rest' => [
@@ -238,6 +260,7 @@ return [
             'entity_http_methods' => [],
             'collection_http_methods' => [
                 0 => 'GET',
+                1 => 'POST',
             ],
             'collection_query_whitelist' => [],
             'page_size' => 25,
@@ -254,6 +277,7 @@ return [
             'entity_http_methods' => [],
             'collection_http_methods' => [
                 0 => 'GET',
+                1 => 'POST',
             ],
             'collection_query_whitelist' => [],
             'page_size' => 25,
@@ -281,6 +305,38 @@ return [
             'collection_class' => \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutCollection::class,
             'service_name' => 'OrdersFolderLeyaout',
         ],
+        'API_Inventory\\V1\\Rest\\OrderStatus\\Controller' => [
+            'listener' => \API_Inventory\V1\Rest\OrderStatus\OrderStatusResource::class,
+            'route_name' => 'api_inventory.rest.order-status',
+            'route_identifier_name' => 'order_status_id',
+            'collection_name' => 'order_status',
+            'entity_http_methods' => [],
+            'collection_http_methods' => [
+                0 => 'GET',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \API_Inventory\V1\Rest\OrderStatus\OrderStatusEntity::class,
+            'collection_class' => \API_Inventory\V1\Rest\OrderStatus\OrderStatusCollection::class,
+            'service_name' => 'OrderStatus',
+        ],
+        'API_Inventory\\V1\\Rest\\DeliveryType\\Controller' => [
+            'listener' => \API_Inventory\V1\Rest\DeliveryType\DeliveryTypeResource::class,
+            'route_name' => 'api_inventory.rest.delivery-type',
+            'route_identifier_name' => 'delivery_type_id',
+            'collection_name' => 'delivery_type',
+            'entity_http_methods' => [],
+            'collection_http_methods' => [
+                0 => 'GET',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \API_Inventory\V1\Rest\DeliveryType\DeliveryTypeEntity::class,
+            'collection_class' => \API_Inventory\V1\Rest\DeliveryType\DeliveryTypeCollection::class,
+            'service_name' => 'DeliveryType',
+        ],
     ],
     'zf-content-negotiation' => [
         'controllers' => [
@@ -293,6 +349,8 @@ return [
             'API_Inventory\\V1\\Rest\\OrderItems\\Controller' => 'Json',
             'API_Inventory\\V1\\Rest\\OrderItemElements\\Controller' => 'Json',
             'API_Inventory\\V1\\Rest\\OrdersFolderLeyaout\\Controller' => 'Json',
+            'API_Inventory\\V1\\Rest\\OrderStatus\\Controller' => 'Json',
+            'API_Inventory\\V1\\Rest\\DeliveryType\\Controller' => 'Json',
         ],
         'accept_whitelist' => [
             'API_Inventory\\V1\\Rest\\Producers\\Controller' => [
@@ -340,6 +398,16 @@ return [
                 1 => 'application/hal+json',
                 2 => 'application/json',
             ],
+            'API_Inventory\\V1\\Rest\\OrderStatus\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\DeliveryType\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
         ],
         'content_type_whitelist' => [
             'API_Inventory\\V1\\Rest\\Producers\\Controller' => [
@@ -375,6 +443,14 @@ return [
                 1 => 'application/json',
             ],
             'API_Inventory\\V1\\Rest\\OrdersFolderLeyaout\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\OrderStatus\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\DeliveryType\\Controller' => [
                 0 => 'application/vnd.api_inventory.v1+json',
                 1 => 'application/json',
             ],
@@ -490,6 +566,30 @@ return [
                 'route_identifier_name' => 'orders_folder_leyaout_id',
                 'is_collection' => true,
             ],
+            \API_Inventory\V1\Rest\OrderStatus\OrderStatusEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.order-status',
+                'route_identifier_name' => 'order_status_id',
+                'hydrator' => \Zend\Hydrator\ArraySerializable::class,
+            ],
+            \API_Inventory\V1\Rest\OrderStatus\OrderStatusCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.order-status',
+                'route_identifier_name' => 'order_status_id',
+                'is_collection' => true,
+            ],
+            \API_Inventory\V1\Rest\DeliveryType\DeliveryTypeEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.delivery-type',
+                'route_identifier_name' => 'delivery_type_id',
+                'hydrator' => \Zend\Hydrator\ArraySerializable::class,
+            ],
+            \API_Inventory\V1\Rest\DeliveryType\DeliveryTypeCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.delivery-type',
+                'route_identifier_name' => 'delivery_type_id',
+                'is_collection' => true,
+            ],
         ],
     ],
     'zf-mvc-auth' => [
@@ -593,7 +693,7 @@ return [
             'API_Inventory\\V1\\Rest\\OrderItems\\Controller' => [
                 'collection' => [
                     'GET' => true,
-                    'POST' => false,
+                    'POST' => true,
                     'PUT' => false,
                     'PATCH' => false,
                     'DELETE' => false,
@@ -609,7 +709,7 @@ return [
             'API_Inventory\\V1\\Rest\\OrderItemElements\\Controller' => [
                 'collection' => [
                     'GET' => true,
-                    'POST' => false,
+                    'POST' => true,
                     'PUT' => false,
                     'PATCH' => false,
                     'DELETE' => false,
@@ -638,10 +738,38 @@ return [
                     'DELETE' => false,
                 ],
             ],
+            'API_Inventory\\V1\\Rest\\OrderStatus\\Controller' => [
+                'collection' => [
+                    'GET' => true,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+                'entity' => [
+                    'GET' => false,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+            ],
+            'API_Inventory\\V1\\Rest\\DeliveryType\\Controller' => [
+                'collection' => [
+                    'GET' => true,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+                'entity' => [
+                    'GET' => false,
+                    'POST' => false,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+            ],
         ],
     ],
-    'controllers' => [
-        'factories' => [],
-    ],
-    'zf-rpc' => [],
 ];

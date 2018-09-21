@@ -70,6 +70,12 @@
     "Material photo deleted": "Material photo deleted",
     "Photo does not exist": "Photo does not exist",
     "Orders not found": "Orders not found",
+    "Order created": "Order created",
+    "Order change": "Order change",
+    "Order Item change": "Order item change",
+    "Order Item created": "Order item created",
+    "Item element change": "Item element change",
+    "Item element created": "Item element created",
     
     
     

@@ -1,14 +1,13 @@
 <?php
-namespace API_Inventory\V1\Rest\OrderItemElements;
+namespace API_Inventory\V1\Rest\DeliveryType;
 
 use ZF\ApiProblem\ApiProblem;
 use ZF\Rest\AbstractResourceListener;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Adapter\Adapter;
 use Application\Service\LanguageService;
-use Zend\Db\Sql\Select;
 
-class OrderItemElementsResource extends AbstractResourceListener
+class DeliveryTypeResource extends AbstractResourceListener
 {
     
     private $adapter;
@@ -32,53 +31,7 @@ class OrderItemElementsResource extends AbstractResourceListener
      */
     public function create($data)
     {
-        
-        if((!isset($data->id) || empty($data->id)) ||
-           (!isset($data->order_items_id) || empty($data->order_items_id)) ||
-           (!isset($data->height) || empty($data->height)) ||
-           (!isset($data->width) || empty($data->width))
-        ){            
-            return new ApiProblem(412, $this->messages['All fields must be provided'], null, $this->messages['Warning'], []);           
-        }
-        
-        $adapter = $this->adapter;
-        $sql = new Sql($adapter);
-        
-        $find = $sql->select()->from('order_items_elements')->where(['id' => $data->id, 'order_items_id' => $data->order_items_id]);
-        try { $itemElement = $adapter->query($sql->getSqlStringForSqlObject($find), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
-        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
-        
-        // if item element exists update it, if not insert new
-        if($itemElement){
-            
-            $updateItemElement = $sql->update('order_items_elements')
-                    ->set([  
-                            'width' => $data->width,
-                            'height' => $data->height
-                        ])
-                    ->where(['id' => $data->id, 'order_items_id' => $data->order_items_id]);
-            
-            try { $editItemElement = $adapter->query($sql->getSqlStringForSqlObject($updateItemElement), $adapter::QUERY_MODE_EXECUTE); }
-            catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
-            
-            return new ApiProblem(200, $this->messages['Item element change'], null, $this->messages['Success'], []);
-            
-        }else{
-            
-            # Insert data in table
-            $createItemElement = $sql->insert('order_items_elements')->values([
-                'width' => $data->width,
-                'height' => $data->height,
-                'order_items_id' => $data->order_items_id
-            ]);
-
-            try { $newItemElement = $adapter->query($sql->getSqlStringForSqlObject($createItemElement), $adapter::QUERY_MODE_EXECUTE); }
-            catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
-
-            return new ApiProblem(200, $this->messages['Item element created'], null, $this->messages['Success'], []);
-            
-        }
-        
+        return new ApiProblem(405, 'The POST method has not been defined');
     }
 
     /**
@@ -125,11 +78,11 @@ class OrderItemElementsResource extends AbstractResourceListener
         $adapter = $this->adapter; 
         $sql = new Sql($adapter);
         
-        $getItemElements = $sql->select()->from('order_items_elements');
-        try { $elements = $adapter->query($sql->getSqlStringForSqlObject($getItemElements), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        $getAllDelivery = $sql->select()->from('delivery_types');
+        try { $deliveryTypes = $adapter->query($sql->getSqlStringForSqlObject($getAllDelivery), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
         catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
         
-        return $elements;
+        return $deliveryTypes;
     }
 
     /**
