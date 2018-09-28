@@ -257,10 +257,14 @@ return [
             'route_name' => 'api_inventory.rest.order-items',
             'route_identifier_name' => 'order_items_id',
             'collection_name' => 'order_items',
-            'entity_http_methods' => [],
+            'entity_http_methods' => [
+                0 => 'GET',
+                1 => 'PUT',
+            ],
             'collection_http_methods' => [
                 0 => 'GET',
                 1 => 'POST',
+                2 => 'PUT',
             ],
             'collection_query_whitelist' => [],
             'page_size' => 25,
@@ -274,7 +278,9 @@ return [
             'route_name' => 'api_inventory.rest.order-item-elements',
             'route_identifier_name' => 'order_item_elements_id',
             'collection_name' => 'order_item_elements',
-            'entity_http_methods' => [],
+            'entity_http_methods' => [
+                0 => 'GET',
+            ],
             'collection_http_methods' => [
                 0 => 'GET',
                 1 => 'POST',
@@ -694,14 +700,14 @@ return [
                 'collection' => [
                     'GET' => true,
                     'POST' => true,
-                    'PUT' => false,
+                    'PUT' => true,
                     'PATCH' => false,
                     'DELETE' => false,
                 ],
                 'entity' => [
-                    'GET' => false,
+                    'GET' => true,
                     'POST' => false,
-                    'PUT' => false,
+                    'PUT' => true,
                     'PATCH' => false,
                     'DELETE' => false,
                 ],
@@ -715,7 +721,7 @@ return [
                     'DELETE' => false,
                 ],
                 'entity' => [
-                    'GET' => false,
+                    'GET' => true,
                     'POST' => false,
                     'PUT' => false,
                     'PATCH' => false,

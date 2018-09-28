@@ -111,7 +111,19 @@ class OrderItemElementsResource extends AbstractResourceListener
      */
     public function fetch($id)
     {
-        return new ApiProblem(405, 'The GET method has not been defined for individual resources');
+        if((!isset($id) || empty($id))){
+            return new ApiProblem(412, $this->messages['Order item element id must be provided'], null, $this->messages['Warning'], []);       
+         }
+    
+        $adapter = $this->adapter; 
+        $sql = new Sql($adapter);
+        
+        // get order item
+        $find = $sql->select()->from('order_items_elements')->where(['id' => $id]);
+        try { $orderItemElement = $adapter->query($sql->getSqlStringForSqlObject($find), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        return $orderItemElement;
     }
 
     /**
