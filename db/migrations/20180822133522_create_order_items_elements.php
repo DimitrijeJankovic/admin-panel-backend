@@ -12,6 +12,7 @@ class CreateOrderItemsElements extends AbstractMigration
                 ->addColumn('order_items_id', 'integer', ['limit' => 225])
                 ->addColumn('width', 'float')
                 ->addColumn('height', 'float')
+                ->addColumn('direction', 'string', ['limit' => 80])
                 ->create();
         
         $orderItemsElements->changeColumn('id', 'integer', ['limit' => MysqlAdapter::INT_BIG, 'signed' => false, 'identity' => true])->save();

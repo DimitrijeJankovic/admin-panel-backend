@@ -23,6 +23,9 @@ class CreateOrder extends AbstractMigration
                 ->addColumn('country', 'integer')
                 ->addColumn('delivery_type_id', 'integer')
                 ->addColumn('supplied_by_users_id', 'integer', [ 'null' => true])
+                ->addColumn('delivery_id', 'integer', [ 'null' => true])
+                ->addColumn('requested_date', 'timestamp', ['null' => true])
+                ->addColumn('photo_attach_image', 'text', ['null' => true])
                 ->create();
         
         $order->changeColumn('id', 'integer', ['limit' => MysqlAdapter::INT_BIG, 'signed' => false, 'identity' => true])->save();
