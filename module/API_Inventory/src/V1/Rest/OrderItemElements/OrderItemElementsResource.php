@@ -33,8 +33,7 @@ class OrderItemElementsResource extends AbstractResourceListener
     public function create($data)
     {
         
-        if((!isset($data->id) || empty($data->id)) ||
-           (!isset($data->order_items_id) || empty($data->order_items_id)) ||
+        if((!isset($data->order_items_id) || empty($data->order_items_id)) ||
            (!isset($data->height) || empty($data->height)) ||
            (!isset($data->width) || empty($data->width))
         ){            
@@ -44,40 +43,17 @@ class OrderItemElementsResource extends AbstractResourceListener
         $adapter = $this->adapter;
         $sql = new Sql($adapter);
         
-        $find = $sql->select()->from('order_items_elements')->where(['id' => $data->id, 'order_items_id' => $data->order_items_id]);
-        try { $itemElement = $adapter->query($sql->getSqlStringForSqlObject($find), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        # Insert data in table
+        $createItemElement = $sql->insert('order_items_elements')->values([
+            'width' => $data->width,
+            'height' => $data->height,
+            'order_items_id' => $data->order_items_id
+        ]);
+
+        try { $newItemElement = $adapter->query($sql->getSqlStringForSqlObject($createItemElement), $adapter::QUERY_MODE_EXECUTE); }
         catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
-        
-        // if item element exists update it, if not insert new
-        if($itemElement){
-            
-            $updateItemElement = $sql->update('order_items_elements')
-                    ->set([  
-                            'width' => $data->width,
-                            'height' => $data->height
-                        ])
-                    ->where(['id' => $data->id, 'order_items_id' => $data->order_items_id]);
-            
-            try { $editItemElement = $adapter->query($sql->getSqlStringForSqlObject($updateItemElement), $adapter::QUERY_MODE_EXECUTE); }
-            catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
-            
-            return new ApiProblem(200, $this->messages['Item element change'], null, $this->messages['Success'], []);
-            
-        }else{
-            
-            # Insert data in table
-            $createItemElement = $sql->insert('order_items_elements')->values([
-                'width' => $data->width,
-                'height' => $data->height,
-                'order_items_id' => $data->order_items_id
-            ]);
 
-            try { $newItemElement = $adapter->query($sql->getSqlStringForSqlObject($createItemElement), $adapter::QUERY_MODE_EXECUTE); }
-            catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
-
-            return new ApiProblem(200, $this->messages['Item element created'], null, $this->messages['Success'], []);
-            
-        }
+        return new ApiProblem(200, $this->messages['Item element created'], null, $this->messages['Success'], []);
         
     }
 
@@ -187,6 +163,35 @@ class OrderItemElementsResource extends AbstractResourceListener
      */
     public function update($id, $data)
     {
-        return new ApiProblem(405, 'The PUT method has not been defined for individual resources');
+        if((!isset($data->order_items_id) || empty($data->order_items_id)) ||
+           (!isset($data->height) || empty($data->height)) ||
+           (!isset($data->width) || empty($data->width))
+        ){            
+            return new ApiProblem(412, $this->messages['All fields must be provided'], null, $this->messages['Warning'], []);           
+        }
+        
+        $adapter = $this->adapter;
+        $sql = new Sql($adapter);
+        
+        $find = $sql->select()->from('order_items_elements')->where(['id' => $id, 'order_items_id' => $data->order_items_id]);
+        try { $itemElement = $adapter->query($sql->getSqlStringForSqlObject($find), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
+        catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        if($itemElement){
+            $updateItemElement = $sql->update('order_items_elements')
+            ->set([  
+                'width' => $data->width,
+                'height' => $data->height
+            ])->where(['id' => $id, 'order_items_id' => $data->order_items_id]);
+            
+            try { $editItemElement = $adapter->query($sql->getSqlStringForSqlObject($updateItemElement), $adapter::QUERY_MODE_EXECUTE); }
+            catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+
+            return new ApiProblem(200, $this->messages['Item element change'], null, $this->messages['Success'], []);
+        }else{
+            return new ApiProblem(400, $this->messages['Item element not found'], null, $this->messages['Error'], []);
+        }    
+        
+        
     }
 }

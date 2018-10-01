@@ -280,10 +280,12 @@ return [
             'collection_name' => 'order_item_elements',
             'entity_http_methods' => [
                 0 => 'GET',
+                1 => 'PUT',
             ],
             'collection_http_methods' => [
                 0 => 'GET',
                 1 => 'POST',
+                2 => 'PUT',
             ],
             'collection_query_whitelist' => [],
             'page_size' => 25,
@@ -716,14 +718,14 @@ return [
                 'collection' => [
                     'GET' => true,
                     'POST' => true,
-                    'PUT' => false,
+                    'PUT' => true,
                     'PATCH' => false,
                     'DELETE' => false,
                 ],
                 'entity' => [
                     'GET' => true,
                     'POST' => false,
-                    'PUT' => false,
+                    'PUT' => true,
                     'PATCH' => false,
                     'DELETE' => false,
                 ],
