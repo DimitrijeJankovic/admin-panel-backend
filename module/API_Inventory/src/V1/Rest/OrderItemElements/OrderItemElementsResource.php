@@ -35,7 +35,8 @@ class OrderItemElementsResource extends AbstractResourceListener
         
         if((!isset($data->order_items_id) || empty($data->order_items_id)) ||
            (!isset($data->height) || empty($data->height)) ||
-           (!isset($data->width) || empty($data->width))
+           (!isset($data->width) || empty($data->width)) ||
+           (!isset($data->direction) || empty($data->direction)) 
         ){            
             return new ApiProblem(412, $this->messages['All fields must be provided'], null, $this->messages['Warning'], []);           
         }
@@ -47,7 +48,8 @@ class OrderItemElementsResource extends AbstractResourceListener
         $createItemElement = $sql->insert('order_items_elements')->values([
             'width' => $data->width,
             'height' => $data->height,
-            'order_items_id' => $data->order_items_id
+            'order_items_id' => $data->order_items_id,
+            'direction' => $data->direction
         ]);
 
         try { $newItemElement = $adapter->query($sql->getSqlStringForSqlObject($createItemElement), $adapter::QUERY_MODE_EXECUTE); }
@@ -165,7 +167,8 @@ class OrderItemElementsResource extends AbstractResourceListener
     {
         if((!isset($data->order_items_id) || empty($data->order_items_id)) ||
            (!isset($data->height) || empty($data->height)) ||
-           (!isset($data->width) || empty($data->width))
+           (!isset($data->width) || empty($data->width)) ||
+           (!isset($data->direction) || empty($data->direction)) 
         ){            
             return new ApiProblem(412, $this->messages['All fields must be provided'], null, $this->messages['Warning'], []);           
         }
@@ -181,7 +184,8 @@ class OrderItemElementsResource extends AbstractResourceListener
             $updateItemElement = $sql->update('order_items_elements')
             ->set([  
                 'width' => $data->width,
-                'height' => $data->height
+                'height' => $data->height,
+                'direction' => $data->direction
             ])->where(['id' => $id, 'order_items_id' => $data->order_items_id]);
             
             try { $editItemElement = $adapter->query($sql->getSqlStringForSqlObject($updateItemElement), $adapter::QUERY_MODE_EXECUTE); }

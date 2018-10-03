@@ -8,6 +8,8 @@ class Config {
     const LANG_FOLDER = '/var/www/admin_panel/data/language';
     const MATERIAL_IMG_FOLDER = '/var/www/admin_panel/public/img/material/';
     const MATERIAL_IMG_ANGULAR = '/var/www/materials_inventory/src/assets/images/materials/';
+    const ORDER_IMG_ANGULAR = '/var/www/materials_inventory/src/assets/images/orders/';
+    const ORDER_ITEM_IMG_ANGULAR = '/var/www/materials_inventory/src/assets/images/order-items/';
         
 }
 

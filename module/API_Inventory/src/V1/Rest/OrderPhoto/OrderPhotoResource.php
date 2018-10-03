@@ -1,15 +1,15 @@
 <?php
-namespace API_Inventory\V1\Rest\MaterialsPhoto;
+namespace API_Inventory\V1\Rest\OrderPhoto;
 
 use ZF\ApiProblem\ApiProblem;
 use ZF\Rest\AbstractResourceListener;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Adapter\Adapter;
 use Application\Service\LanguageService;
-use Zend\Db\Sql\Select;
 
-class MaterialsPhotoResource extends AbstractResourceListener
+class OrderPhotoResource extends AbstractResourceListener
 {
+    
     private $adapter;
     private $messages;
     
@@ -31,10 +31,11 @@ class MaterialsPhotoResource extends AbstractResourceListener
      */
     public function create($data)
     {
-        $materialId = (int) $this->getEvent()->getRouteParam('materials_photo_id', false);
         
-        if((!isset($materialId) || empty($materialId))){            
-            return new ApiProblem(404, $this->messages['material id must be provided'], null, $this->messages['Warning'], []);           
+        $order_id = (int) $this->getEvent()->getRouteParam('order_id', false);
+        
+        if((!isset($order_id) || empty($order_id))){            
+            return new ApiProblem(404, $this->messages['Order id must be provided'], null, $this->messages['Warning'], []);           
         }
         
         # Validate user input
@@ -57,45 +58,45 @@ class MaterialsPhotoResource extends AbstractResourceListener
         $adapter = $this->adapter;
         $sql = new Sql($adapter);
         
-        // chack if material exists
-        $materialSelect = $sql->select('materials')->where(['id' => $materialId]);
-        try { $materialR = $adapter->query($sql->getSqlStringForSqlObject($materialSelect), $adapter::QUERY_MODE_EXECUTE)->toArray(); } 
+        // chack if order exists
+        $orderSelect = $sql->select('order')->where(['id' => $order_id]);
+        try { $order = $adapter->query($sql->getSqlStringForSqlObject($orderSelect), $adapter::QUERY_MODE_EXECUTE)->toArray(); } 
         catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage()); }
 
-        if(empty($materialR)){
-            return new ApiProblem(404, $this->messages['Material not found'], null, $this->messages['Error'], []);
+        if(empty($order)){
+            return new ApiProblem(404, $this->messages['Order not found'], null, $this->messages['Error'], []);
         }
         
         $fileExtension = explode("/",$_FILES["photo"]['type'])[1];
         
-        $imageName = 'material_' . $materialId . "_photo_" . time().".$fileExtension";
+        $imageName = 'order' . $order_id . "_photo_" . time().".$fileExtension";
 
         # Url where image will be recorded
-        $photoUrl = \Application\Model\Config::MATERIAL_IMG_ANGULAR.$imageName;
+        $photoUrl = \Application\Model\Config::ORDER_IMG_ANGULAR.$imageName;
 
         # Move image to location
         $imgUploaded = move_uploaded_file($_FILES["photo"]['tmp_name'], $photoUrl);
-
+        
         if($imgUploaded){
             
             #Get old photo name
-            $oldPhotoSelect = $sql->select('materials')
-                    ->columns(['image_url'])
-                    ->where(['id' => $materialId]);
+            $oldPhotoSelect = $sql->select('order')
+                    ->columns(['photo_attach_image'])
+                    ->where(['id' => $order_id]);
 
             try { $oldPhoto = $adapter->query($sql->getSqlStringForSqlObject($oldPhotoSelect), $adapter::QUERY_MODE_EXECUTE)->toArray(); } 
             catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage()); }
             
             # Delete old photo if it exist
-            if (!empty($oldPhoto[0]['image_url'])) {
+            if (!empty($oldPhoto[0]['photo_attach_image'])) {
                 
-                $oldImgUrl = \Application\Model\Config::MATERIAL_IMG_ANGULAR.$oldPhoto[0]['image_url'];
+                $oldImgUrl = \Application\Model\Config::ORDER_IMG_ANGULAR.$oldPhoto[0]['photo_attach_image'];
                 
                 if (file_exists($oldImgUrl)) { unlink($oldImgUrl); }
                 
             }
 
-            $update = $sql->update('materials')->where(['id' => $materialId])->set(["image_url" => $imageName]);
+            $update = $sql->update('order')->where(['id' => $order_id])->set(["photo_attach_image" => $imageName]);
             try { $adapter->query($sql->getSqlStringForSqlObject($update), $adapter::QUERY_MODE_EXECUTE); } 
             catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage()); }
 
@@ -114,38 +115,37 @@ class MaterialsPhotoResource extends AbstractResourceListener
      */
     public function delete($id)
     {
+        
         if((!isset($id) || empty($id))){            
-            return new ApiProblem(404, $this->messages['material id must be provided'], null, $this->messages['Warning'], []);           
+            return new ApiProblem(404, $this->messages['Order id must be provided'], null, $this->messages['Warning'], []);           
         }
         
         $adapter = $this->adapter;
         $sql = new Sql($adapter);
         
-        // chack if material exists
-        $materialSelect = $sql->select('materials')->where(['id' => $id]);
-        try { $materialR = $adapter->query($sql->getSqlStringForSqlObject($materialSelect), $adapter::QUERY_MODE_EXECUTE)->toArray(); } 
+        // chack if order exists
+        $orderSelect = $sql->select('order')->where(['id' => $id]);
+        try { $order = $adapter->query($sql->getSqlStringForSqlObject($orderSelect), $adapter::QUERY_MODE_EXECUTE)->toArray(); } 
         catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage()); }
 
-        if(empty($materialR)){
-            return new ApiProblem(404, $this->messages['Material not found'], null, $this->messages['Error'], []);
+        if(empty($order)){
+            return new ApiProblem(404, $this->messages['Order not found'], null, $this->messages['Error'], []);
         }
         
-        if(!empty($materialR[0]['image_url'])){
-            $img = \Application\Model\Config::MATERIAL_IMG_ANGULAR.$materialR[0]['image_url'];
+        if(!empty($order[0]['photo_attach_image'])){
+            $img = \Application\Model\Config::ORDER_IMG_ANGULAR.$order[0]['photo_attach_image'];
             
             if (file_exists($img)) { unlink($img); }
             
-            $updateMaterialPhoto = $sql->update('materials')->set(['image_url' => null])->where(['id' => $id]);
-
-            try { $materialData = $adapter->query($sql->getSqlStringForSqlObject($updateMaterialPhoto), $adapter::QUERY_MODE_EXECUTE); }
+            $updateOrderPhoto = $sql->update('order')->set(['photo_attach_image' => null])->where(['id' => $id]);
+            try { $orderData = $adapter->query($sql->getSqlStringForSqlObject($updateOrderPhoto), $adapter::QUERY_MODE_EXECUTE); }
             catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
 
-            return new ApiProblem(200, $this->messages['Material photo deleted'], null, $this->messages['Success'], []);
+            return new ApiProblem(200, $this->messages['Order photo deleted'], null, $this->messages['Success'], []);
             
         }else{
             return new ApiProblem(404, $this->messages['Photo does not exist'], null, $this->messages['Warning'], []);
         }
-        
         
     }
 

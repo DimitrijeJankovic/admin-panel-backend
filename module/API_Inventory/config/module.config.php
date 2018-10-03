@@ -14,6 +14,8 @@ return [
             \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutResource::class => \API_Inventory\V1\Rest\OrdersFolderLeyaout\OrdersFolderLeyaoutResourceFactory::class,
             \API_Inventory\V1\Rest\OrderStatus\OrderStatusResource::class => \API_Inventory\V1\Rest\OrderStatus\OrderStatusResourceFactory::class,
             \API_Inventory\V1\Rest\DeliveryType\DeliveryTypeResource::class => \API_Inventory\V1\Rest\DeliveryType\DeliveryTypeResourceFactory::class,
+            \API_Inventory\V1\Rest\OrderPhoto\OrderPhotoResource::class => \API_Inventory\V1\Rest\OrderPhoto\OrderPhotoResourceFactory::class,
+            \API_Inventory\V1\Rest\OrderItemPhoto\OrderItemPhotoResource::class => \API_Inventory\V1\Rest\OrderItemPhoto\OrderItemPhotoResourceFactory::class,
         ],
     ],
     'router' => [
@@ -117,6 +119,24 @@ return [
                     ],
                 ],
             ],
+            'api_inventory.rest.order-photo' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/order-photo[/:order_id]',
+                    'defaults' => [
+                        'controller' => 'API_Inventory\\V1\\Rest\\OrderPhoto\\Controller',
+                    ],
+                ],
+            ],
+            'api_inventory.rest.order-item-photo' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/order-item-photo[/:item_id]',
+                    'defaults' => [
+                        'controller' => 'API_Inventory\\V1\\Rest\\OrderItemPhoto\\Controller',
+                    ],
+                ],
+            ],
         ],
     ],
     'zf-versioning' => [
@@ -132,6 +152,8 @@ return [
             9 => 'api_inventory.rest.orders-folder-leyaout',
             10 => 'api_inventory.rest.order-status',
             11 => 'api_inventory.rest.delivery-type',
+            12 => 'api_inventory.rest.order-photo',
+            13 => 'api_inventory.rest.order-item-photo',
         ],
     ],
     'zf-rest' => [
@@ -345,6 +367,44 @@ return [
             'collection_class' => \API_Inventory\V1\Rest\DeliveryType\DeliveryTypeCollection::class,
             'service_name' => 'DeliveryType',
         ],
+        'API_Inventory\\V1\\Rest\\OrderPhoto\\Controller' => [
+            'listener' => \API_Inventory\V1\Rest\OrderPhoto\OrderPhotoResource::class,
+            'route_name' => 'api_inventory.rest.order-photo',
+            'route_identifier_name' => 'order_id',
+            'collection_name' => 'order_photo',
+            'entity_http_methods' => [
+                0 => 'DELETE',
+                1 => 'POST',
+            ],
+            'collection_http_methods' => [
+                0 => 'POST',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \API_Inventory\V1\Rest\OrderPhoto\OrderPhotoEntity::class,
+            'collection_class' => \API_Inventory\V1\Rest\OrderPhoto\OrderPhotoCollection::class,
+            'service_name' => 'OrderPhoto',
+        ],
+        'API_Inventory\\V1\\Rest\\OrderItemPhoto\\Controller' => [
+            'listener' => \API_Inventory\V1\Rest\OrderItemPhoto\OrderItemPhotoResource::class,
+            'route_name' => 'api_inventory.rest.order-item-photo',
+            'route_identifier_name' => 'item_id',
+            'collection_name' => 'order_item_photo',
+            'entity_http_methods' => [
+                0 => 'POST',
+                1 => 'DELETE',
+            ],
+            'collection_http_methods' => [
+                0 => 'POST',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \API_Inventory\V1\Rest\OrderItemPhoto\OrderItemPhotoEntity::class,
+            'collection_class' => \API_Inventory\V1\Rest\OrderItemPhoto\OrderItemPhotoCollection::class,
+            'service_name' => 'OrderItemPhoto',
+        ],
     ],
     'zf-content-negotiation' => [
         'controllers' => [
@@ -359,6 +419,8 @@ return [
             'API_Inventory\\V1\\Rest\\OrdersFolderLeyaout\\Controller' => 'Json',
             'API_Inventory\\V1\\Rest\\OrderStatus\\Controller' => 'Json',
             'API_Inventory\\V1\\Rest\\DeliveryType\\Controller' => 'Json',
+            'API_Inventory\\V1\\Rest\\OrderPhoto\\Controller' => 'Json',
+            'API_Inventory\\V1\\Rest\\OrderItemPhoto\\Controller' => 'Json',
         ],
         'accept_whitelist' => [
             'API_Inventory\\V1\\Rest\\Producers\\Controller' => [
@@ -416,6 +478,16 @@ return [
                 1 => 'application/hal+json',
                 2 => 'application/json',
             ],
+            'API_Inventory\\V1\\Rest\\OrderPhoto\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\OrderItemPhoto\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
         ],
         'content_type_whitelist' => [
             'API_Inventory\\V1\\Rest\\Producers\\Controller' => [
@@ -459,6 +531,14 @@ return [
                 1 => 'application/json',
             ],
             'API_Inventory\\V1\\Rest\\DeliveryType\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\OrderPhoto\\Controller' => [
+                0 => 'application/vnd.api_inventory.v1+json',
+                1 => 'application/json',
+            ],
+            'API_Inventory\\V1\\Rest\\OrderItemPhoto\\Controller' => [
                 0 => 'application/vnd.api_inventory.v1+json',
                 1 => 'application/json',
             ],
@@ -596,6 +676,30 @@ return [
                 'entity_identifier_name' => 'id',
                 'route_name' => 'api_inventory.rest.delivery-type',
                 'route_identifier_name' => 'delivery_type_id',
+                'is_collection' => true,
+            ],
+            \API_Inventory\V1\Rest\OrderPhoto\OrderPhotoEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.order-photo',
+                'route_identifier_name' => 'order_id',
+                'hydrator' => \Zend\Hydrator\ArraySerializable::class,
+            ],
+            \API_Inventory\V1\Rest\OrderPhoto\OrderPhotoCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.order-photo',
+                'route_identifier_name' => 'order_id',
+                'is_collection' => true,
+            ],
+            \API_Inventory\V1\Rest\OrderItemPhoto\OrderItemPhotoEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.order-item-photo',
+                'route_identifier_name' => 'item_id',
+                'hydrator' => \Zend\Hydrator\ArraySerializable::class,
+            ],
+            \API_Inventory\V1\Rest\OrderItemPhoto\OrderItemPhotoCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'api_inventory.rest.order-item-photo',
+                'route_identifier_name' => 'item_id',
                 'is_collection' => true,
             ],
         ],
@@ -776,6 +880,38 @@ return [
                     'PUT' => false,
                     'PATCH' => false,
                     'DELETE' => false,
+                ],
+            ],
+            'API_Inventory\\V1\\Rest\\OrderPhoto\\Controller' => [
+                'collection' => [
+                    'GET' => false,
+                    'POST' => true,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+                'entity' => [
+                    'GET' => false,
+                    'POST' => true,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => true,
+                ],
+            ],
+            'API_Inventory\\V1\\Rest\\OrderItemPhoto\\Controller' => [
+                'collection' => [
+                    'GET' => false,
+                    'POST' => true,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => false,
+                ],
+                'entity' => [
+                    'GET' => false,
+                    'POST' => true,
+                    'PUT' => false,
+                    'PATCH' => false,
+                    'DELETE' => true,
                 ],
             ],
         ],

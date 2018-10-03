@@ -36,6 +36,7 @@ class OrdersResource extends AbstractResourceListener
         if((!isset($data->adress) || empty($data->adress)) ||
            (!isset($data->country) || empty($data->country)) ||
            (!isset($data->date_created) || empty($data->date_created)) ||
+           (!isset($data->requested_date) || empty($data->requested_date)) ||
            (!isset($data->delivery_type_id) || empty($data->delivery_type_id)) ||
            (!isset($data->payment)) ||
            (!isset($data->state) || empty($data->state)) ||
@@ -58,6 +59,7 @@ class OrdersResource extends AbstractResourceListener
             'date_in_progress' => isset($data->date_in_progress)? $data->date_in_progress : null,
             'date_finished' => isset($data->date_finished)? $data->date_finished : null,
             'date_delivery' => isset($data->date_delivery)? $data->date_delivery : null,
+            'requested_date' => $data->requested_date,
             'status_id' => $data->status_id,
             'payment' => $data->payment,
             'price' => isset($data->price)? $data->price : null,
@@ -115,9 +117,12 @@ class OrdersResource extends AbstractResourceListener
         
         // get order
         $find = $sql->select()->from('order')->where(['id' => $id]);
-        
         try { $order = $adapter->query($sql->getSqlStringForSqlObject($find), $adapter::QUERY_MODE_EXECUTE)->toArray(); }
         catch (\Zend\Db\Adapter\Adapter $e) { return new ApiProblem(409, $e->getPrevious()->getMessage(), null, $this->messages['Error'], []); }
+        
+        if(empty($order)){
+            return new ApiProblem(404, $this->messages['Order not found'], null, $this->messages['Warning'], []);  
+        }
         
         return $order;
         
@@ -137,7 +142,7 @@ class OrdersResource extends AbstractResourceListener
         
         # Get material
         $getOrders = "SELECT `order`.id AS order_id ,user_id, date_created, date_in_progress, 
-                        date_finished, date_delivery,  payment, price, adress, adress1, state, 
+                        date_finished, date_delivery, requested_date, payment, price, adress, adress1, state, 
                         supplied_by_users_id, status_types.name AS status_type, countries.name 
                         AS countrie, delivery_types.name AS delivery_type
                         FROM `order`
@@ -229,6 +234,7 @@ class OrdersResource extends AbstractResourceListener
         if((!isset($data->adress) || empty($data->adress)) ||
            (!isset($data->country) || empty($data->country)) ||
            (!isset($data->date_created) || empty($data->date_created)) ||
+           (!isset($data->requested_date) || empty($data->requested_date)) ||
            (!isset($data->delivery_type_id) || empty($data->delivery_type_id)) ||
            (!isset($data->payment)) ||
            (!isset($data->state) || empty($data->state)) ||
@@ -254,6 +260,7 @@ class OrdersResource extends AbstractResourceListener
                     'date_in_progress' => isset($data->date_in_progress)? $data->date_in_progress : null,
                     'date_finished' => isset($data->date_finished)? $data->date_finished : null,
                     'date_delivery' => isset($data->date_delivery)? $data->date_delivery : null,
+                    'requested_date' => $data->requested_date,
                     'status_id' => $data->status_id,
                     'payment' => $data->payment,
                     'price' => isset($data->price)? $data->price : null,

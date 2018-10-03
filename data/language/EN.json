@@ -80,6 +80,11 @@
     "Order item element id must be provided": "Order item element id must be provided",
     "Order not found": "Order not found",
     "Item element not found": "Item element not found",
+    "Order id must be provided": "Order id must be provided",
+    "Order photo deleted": "Order photo deleted",
+    "Item not found": "Item not found",
+    "Item photo deleted": "Item photo deleted",
+    
     
     
     

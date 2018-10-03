@@ -48,7 +48,8 @@ class OrderItemsResource extends AbstractResourceListener
         $createOrderItem = $sql->insert('order_items')->values([
             'order_id' => $data->order_id,
             'material_id' => $data->material_id,
-            'quantity' => $data->quantity
+            'quantity' => $data->quantity,
+            'materials_custom_id' => 1
         ]);
 
         try { $newOrderItem = $adapter->query($sql->getSqlStringForSqlObject($createOrderItem), $adapter::QUERY_MODE_EXECUTE); }
